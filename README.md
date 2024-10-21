@@ -6,8 +6,6 @@
 1. [Создание HTML файла](#chapter-i)
 2.  [Создание JSON и Webpack файлов](#chapter-iii) 
 3. [Создание JS файла](#chapter-ii) <br> 
-    2.1. [Information](#information) <br> 
-    3.1. [Part 1](#part-1-реализация-функции-библиотеки-s21_matrix_ooph)<br> 
 ## Введение
 Проект, который мы будем сегодня реализовывать имеет несколько практических сосотавляющих:
    > - Научиться базывам принципам работы с библиотекой three.js;
@@ -87,3 +85,72 @@ module.exports = {
     mode: 'development', // Режим сборки (development или production)
 };
 ```
+### Создание JS файла
+Как вы уже поняли из прошлого блока, нам необходимо создать файл ```lab.js```. 
+Для начала рекомендую в принуипе ознакомиться с библиотекой Three.js на официальном сайте ```https://threejs.org```. Там прекрасно описаны основные "3 кита Three.js" и есть каталог со всеми необходимыми методами. <br><br>
+Я постараюсь кратко описать всю структуру и математику проекта, поэтому опишу основной алгоритм выполнения: <br>
+    > 1) Необходимо скачать библиотеку ```three``` так же через brew;
+    > 2) Импортируем все из этой библиотеки (это уже прописываем в файле) ```import * as THREE from 'three';```;
+    > 3) Для возможности манипулировать в дальнейшем картинкой (вращать ее), прописываем : ```import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';```
+    > 4) Создаем необходимый золст, где будет проецироваться 3d-фигура:
+    ```let canvas = document.getElementById('myscene');
+let width = 1400;
+let height = 800;
+```
+    > 5) Создаем экземпляр рендринка, задавая ему значение холста и сглаживания (для 3d графики очень важный аспект):
+```let renderer = new THREE.WebGLRenderer({
+    canvas: canvas,
+    antialias: true
+});
+```
+    > 6) Устанавливаем соотношение пикселей с помощью метода ```setPixelRatio``` ( возвращает коэффициент пикселей устройства. Если он больше 1 (что означает, что устройство имеет высокое разрешение), мы устанавливаем соотношение пикселей в 2, иначе — в 1.). Потом задаем размеры холста и его цвет
+    > 7) Затем создаем сцену и устанавливаем камеру (это базовые настройки, которые можно корректировать в зависимости от ваших предпочтений, поэтому расписывать это не буду)
+    > 8) Чтобы в дальнейшем не добавлять по одному элементу на сцену, я создам группу, которая будет хранить в себе все элементы моего рисования (далее это поможет при вращении и перемещении всего объекта в целом) ```let group = new THREE.Group()```;
+    > 9) Далее идет основная часть этого приложения - рисование. В этом блоке мы обращаемся к элементу ```input``` и задаем ему функцию с собитием нажатия, при котором он будет запускать по факту весь функционал нашей программы. 
+    Распишу это немного подробнее.  <br><br>
+    Для начала мы создаем переменную которая будет используется для получения первого файла, выбранного пользователем через элемент <input type="file"> в HTML.<br><br>
+    После того, как мы убедились, что файл не пустой, мы начинаем отрисовку:
+    ``` reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                let canvas2d = document.createElement('canvas');
+                let ctx = canvas2d.getContext('2d');
+                canvas2d.width = 200;
+                canvas2d.height = 200;
+
+                ctx.drawImage(img, 0, 0, 200, 200);
+                let size = 200;
+                let data = ctx.getImageData(0, 0, size, size).data;
+
+                group.clear();
+
+                for (let i = 0; i < size; ++i) {
+                    let geometry = new THREE.BufferGeometry();
+                    let vertices = new Float32Array(size * 3);
+                    let colors = new Float32Array(size * 3); 
+
+                    for (let j = 0; j < size; ++j) {
+                        let colorIndex = (j * size + i) * 4; 
+                        let r = data[colorIndex] / 255; 
+                        let g = data[colorIndex + 1] / 255; 
+                        let b = data[colorIndex + 2] / 255;
+
+                        vertices[j * 3] = j - 100; 
+                        vertices[j * 3 + 1] = i - 100; 
+                        vertices[j * 3 + 2] = data[colorIndex] / 10; 
+
+                        colors[j * 3] = r;
+                        colors[j * 3 + 1] = g; 
+                        colors[j * 3 + 2] = b; 
+                    }
+
+                    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+                    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+                    let material = new THREE.LineBasicMaterial({ vertexColors: true });
+                    let line = new THREE.Line(geometry, material);
+                    group.add(line);
+                }
+            };
+            ```
+            
