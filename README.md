@@ -175,5 +175,13 @@ let material = new THREE.LineBasicMaterial({ vertexColors: true });
 let line = new THREE.Line(geometry, material);
 group.add(line);
 ```
-После того как массивы vertices и colors заполнены, они устанавливаются как атрибуты геометрии. Затем создается материал с использованием цветов вершин, и линия добавляется в группу.
+После того как массивы vertices и colors заполнены, они устанавливаются как атрибуты геометрии. Затем создается материал с использованием цветов вершин, и линия добавляется в группу. <br><br>
+В принципе, это все. Нам осталось загрузить результат в объект ```img``` и отрисовать это все с помощью функции, которая вызывает саму себя и обновляет данные сцены и камеры:
+```function animation() {
+    requestAnimationFrame(animation);
+    controls.update();
+    renderer.render(scene, camera);
+}
+animation();
+```
             
