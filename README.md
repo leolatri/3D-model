@@ -103,48 +103,77 @@ let height = 800;```
     <br><br> 9) Далее идет основная часть этого приложения - рисование. В этом блоке мы обращаемся к элементу ```input``` и задаем ему функцию с собитием нажатия, при котором он будет запускать по факту весь функционал нашей программы. <br><br>
     Распишу это немного подробнее.  <br><br>
     Для начала мы создаем переменную которая будет используется для получения первого файла, выбранного пользователем через элемент <input type="file"> в HTML.<br><br>
-    После того, как мы убедились, что файл не пустой, мы начинаем отрисовку:
-``` reader.onload = function(e) {
-            const img = new Image();
-            img.onload = function() {
-                let canvas2d = document.createElement('canvas');
-                let ctx = canvas2d.getContext('2d');
-                canvas2d.width = 200;
-                canvas2d.height = 200;
+    После того, как мы убедились, что файл не пустой, мы начинаем отрисовку: <br><br>
+> 1) Создание объекта изображения:
+```const img = new Image();```
+Здесь создается новый объект Image, который будет использоваться для загрузки изображения.
+> 2) Обработчик события onload:
 
-                ctx.drawImage(img, 0, 0, 200, 200);
-                let size = 200;
-                let data = ctx.getImageData(0, 0, size, size).data;
+```img.onload = function() {
+    // Код внутри этой функции выполнится, когда изображение будет загружено
+};``` 
+Этот обработчик срабатывает, когда изображение успешно загружено. Внутри него будет выполняться основной код для обработки изображения.
 
-                group.clear();
+> 3) Создание канваса и контекста:
 
-                for (let i = 0; i < size; ++i) {
-                    let geometry = new THREE.BufferGeometry();
-                    let vertices = new Float32Array(size * 3);
-                    let colors = new Float32Array(size * 3); 
-
-                    for (let j = 0; j < size; ++j) {
-                        let colorIndex = (j * size + i) * 4; 
-                        let r = data[colorIndex] / 255; 
-                        let g = data[colorIndex + 1] / 255; 
-                        let b = data[colorIndex + 2] / 255;
-
-                        vertices[j * 3] = j - 100; 
-                        vertices[j * 3 + 1] = i - 100; 
-                        vertices[j * 3 + 2] = data[colorIndex] / 10; 
-
-                        colors[j * 3] = r;
-                        colors[j * 3 + 1] = g; 
-                        colors[j * 3 + 2] = b; 
-                    }
-
-                    geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
-                    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-                    let material = new THREE.LineBasicMaterial({ vertexColors: true });
-                    let line = new THREE.Line(geometry, material);
-                    group.add(line);
-                }
-            };
+```let canvas2d = document.createElement('canvas');
+let ctx = canvas2d.getContext('2d');
+canvas2d.width = 200;
+canvas2d.height = 200;
 ```
+Здесь создается временный элемент <canvas>, который используется для рисования изображения в 2D. Устанавливаются размеры канваса на 200x200 пикселей.
+> 4) Рисование изображения на канвасе:
+```
+ctx.drawImage(img, 0, 0, 200, 200);
+let data = ctx.getImageData(0, 0, size, size).data;
+```
+Изображение рисуется на канвасе, и затем получаются данные пикселей с помощью getImageData. Эти данные содержат информацию о цветах каждого пикселя в формате RGBA.
+
+> 5) Очистка группы:
+```
+group.clear();
+```
+Здесь очищается группа group, чтобы удалить предыдущие объекты перед добавлением новых.
+
+> 6) Цикл для создания 3D-объектов:
+```
+for (let i = 0; i < size; ++i) {
+    let geometry = new THREE.BufferGeometry();
+    let vertices = new Float32Array(size * 3);
+    let colors = new Float32Array(size * 3);
+```
+В этом цикле создается новая геометрия для каждой строки пикселей. vertices и colors — это массивы, которые будут содержать координаты вершин и цвета для каждой линии.
+
+> 7) Цикл для обработки пикселей:
+```
+for (let j = 0; j < size; ++j) {
+    let colorIndex = (j * size + i) * 4; 
+    let r = data[colorIndex] / 255; 
+    let g = data[colorIndex + 1] / 255; 
+    let b = data[colorIndex + 2] / 255;
+```
+Внутренний цикл проходит по каждому пикселю в строке, извлекая значения цвета (красный, зеленый, синий) из массива данных пикселей. Значения нормализуются, деля на 255.
+
+> 8) Установка координат вершин и цветов:
+```
+vertices[j * 3] = j - 100; 
+vertices[j * 3 + 1] = i - 100; 
+vertices[j * 3 + 2] = data[colorIndex] / 10; 
+
+colors[j * 3] = r;
+colors[j * 3 + 1] = g; 
+colors[j * 3 + 2] = b;
+```
+Здесь устанавливаются координаты вершин для 3D-объектов. z-координата устанавливается на основе значения красного канала, деленного на 10, чтобы создать некоторую высоту.
+
+> 9) Создание геометрии и добавление в группу:
+```
+geometry.setAttribute('position', new THREE.BufferAttribute(vertices, 3));
+geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+let material = new THREE.LineBasicMaterial({ vertexColors: true });
+let line = new THREE.Line(geometry, material);
+group.add(line);
+```
+После того как массивы vertices и colors заполнены, они устанавливаются как атрибуты геометрии. Затем создается материал с использованием цветов вершин, и линия добавляется в группу.
             
