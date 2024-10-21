@@ -61,8 +61,8 @@
 ```
 <br>
 Чтобы создать файл конфигурации для Webpack, вам нужно создать файл с именем webpack.config.js в корневой директории вашего проекта. Этот файл будет содержать настройки, которые Webpack будет использовать для сборки вашего проекта. 
-```
-const path = require('path');
+
+``` const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
