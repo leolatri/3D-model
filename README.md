@@ -104,7 +104,7 @@ let height = 800;```
     Распишу это немного подробнее.  <br><br>
     Для начала мы создаем переменную которая будет используется для получения первого файла, выбранного пользователем через элемент <input type="file"> в HTML.<br><br>
     После того, как мы убедились, что файл не пустой, мы начинаем отрисовку:
-          ``` reader.onload = function(e) {
+``` reader.onload = function(e) {
             const img = new Image();
             img.onload = function() {
                 let canvas2d = document.createElement('canvas');
@@ -146,5 +146,5 @@ let height = 800;```
                     group.add(line);
                 }
             };
-            ```
+```
             
