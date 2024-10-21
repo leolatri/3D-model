@@ -95,8 +95,7 @@ module.exports = {
     > 4) Создаем необходимый золст, где будет проецироваться 3d-фигура:
     ```let canvas = document.getElementById('myscene');
 let width = 1400;
-let height = 800;
-```
+let height = 800;```
     > 5) Создаем экземпляр рендринка, задавая ему значение холста и сглаживания (для 3d графики очень важный аспект):
 ```let renderer = new THREE.WebGLRenderer({
     canvas: canvas,
