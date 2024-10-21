@@ -57,5 +57,32 @@
         "webpack-cli": "^5.1.4",
         "webpack-dev-server": "^5.1.0"
     }
-}
+} 
+```
+<br>
+Чтобы создать файл конфигурации для Webpack, вам нужно создать файл с именем webpack.config.js в корневой директории вашего проекта. Этот файл будет содержать настройки, которые Webpack будет использовать для сборки вашего проекта. <br><br>
+```const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+
+module.exports = {
+    entry: './lab.js', // Указывает входной файл для сборки
+    output: {
+        filename: 'lab.js', // Имя выходного файла
+        path: path.resolve(__dirname, 'dist'), // Путь к выходной директории
+        clean: true, // Очищает выходную директорию перед каждой сборкой
+    },
+    devServer: {
+        static: {
+            directory: path.join(__dirname, 'dist'), // Указывает директорию для статических файлов
+        },
+        open: true, // Автоматически открывает браузер при запуске сервера
+        port: 8080, // Порт, на котором будет запущен сервер
+    },
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: './lab.html', // Шаблон HTML-файла
+        }),
+    ],
+    mode: 'development', // Режим сборки (development или production)
+};
 ```
